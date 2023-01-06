@@ -46,6 +46,7 @@ jobs:
         rm /usr/local/bin/python3-config
         rm /usr/local/bin/*.lima
         rm /usr/local/bin/lima
+        rm /usr/local/bin/limactl
         brew update
         brew install qemu bash coreutils
         brew install autoconf automake
