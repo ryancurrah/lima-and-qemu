@@ -23,6 +23,9 @@ jobs:
         submodules: recursive
         persist-credentials: false
 
+    - name: Remove pre-installed Colima and Lima
+      run: brew uninstall colima lima
+
     - name: Make and install Lima
       run: make -C src/lima all install
 
@@ -44,9 +47,6 @@ jobs:
         rm /usr/local/bin/pydoc3
         rm /usr/local/bin/python3
         rm /usr/local/bin/python3-config
-        rm /usr/local/bin/*.lima
-        rm /usr/local/bin/lima
-        rm /usr/local/bin/limactl
         brew update
         brew install qemu bash coreutils
         brew install autoconf automake
