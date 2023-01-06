@@ -35,6 +35,7 @@ jobs:
       # TODO: Once https://github.com/actions/runner-images/issues/6817 is 
       #       resolved, remove run lines with "rm /usr/local/bin/*"
       run: |
+        rm /usr/local/bin/2to3-3.11
         rm /usr/local/bin/2to3
         rm /usr/local/bin/idle3
         rm /usr/local/bin/pydoc3
