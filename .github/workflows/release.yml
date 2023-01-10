@@ -11,7 +11,7 @@ env:
 
 jobs:
   macos-build:
-    runs-on: macos-12
+    runs-on: macos-11
     timeout-minutes: 60
     steps:
     - uses: actions/setup-go@v2
@@ -25,11 +25,6 @@ jobs:
 
     - name: Remove pre-installed Colima and Lima
       run: brew uninstall colima lima
-
-    - name: Switch Xcode version to enable macOS 13 SDK
-      run: |
-        sudo xcode-select --switch /Applications/Xcode_14.1.app
-        xcrun --show-sdk-version
 
     - name: Make and install Lima
       run: make -C src/lima all install
@@ -81,11 +76,43 @@ jobs:
         ./bin/lima-and-qemu.pl
         mv src/lima/lima-and-qemu.tar.gz src/lima/lima-and-qemu.macos.tar.gz
         sha512sum src/lima/lima-and-qemu.macos.tar.gz > src/lima/lima-and-qemu.macos.tar.gz.sha512sum
+
     - name: Upload MacOS build
       uses: actions/upload-artifact@v2
       with:
         name: lima-and-qemu.macos
         path: ./src/lima/lima-and-qemu.macos*
+        if-no-files-found: error
+
+  macos-ventura-build:
+    runs-on: macos-13
+    timeout-minutes: 60
+    steps:
+    - uses: actions/setup-go@v2
+      with:
+        go-version: 1.19.x
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+        submodules: recursive
+        persist-credentials: false
+
+    - name: Remove pre-installed Colima and Lima
+      run: brew uninstall colima lima
+
+    - name: Make and install Lima
+      run: make -C src/lima all install
+
+    - name: Create Ventura limactl tarball
+      run: |
+        ./bin/limactl.pl ventura
+        sha512sum src/lima/limactl.ventura.tar.gz > src/lima/limactl.ventura.tar.gz.sha512sum
+
+    - name: Upload Ventura build
+      uses: actions/upload-artifact@v2
+      with:
+        name: limactl.ventura
+        path: ./src/lima/limactl.ventura*
         if-no-files-found: error
 
   linux-build:
@@ -164,4 +191,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         tag="${GITHUB_REF##*/}"
-        hub release create -a build/lima-and-qemu.linux.tar.gz -a build/lima-and-qemu.linux.tar.gz.sha512sum -a build/lima-and-qemu.macos.tar.gz -a build/lima-and-qemu.macos.tar.gz.sha512sum -m "${tag}" --draft "${tag}"
+        hub release create -a build/lima-and-qemu.linux.tar.gz -a build/lima-and-qemu.linux.tar.gz.sha512sum -a build/lima-and-qemu.macos.tar.gz -a build/lima-and-qemu.macos.tar.gz.sha512sum -a build/limactl.ventura.tar.gz -a build/limactl.ventura.tar.gz.sha512sum -m "${tag}" --draft "${tag}"
