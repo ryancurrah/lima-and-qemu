@@ -97,6 +97,14 @@ jobs:
         submodules: recursive
         persist-credentials: false
 
+    - name: "Switch Xcode version to enable macOS 13 SDK"
+      # Xcode 14.1 added support for macOS 13 SDK.
+      # The default version is still 14.0.1, as of November 2022.
+      # https://github.com/actions/runner-images/blob/main/images/macos/macos-12-Readme.md#xcode
+      run: |
+        sudo xcode-select --switch /Applications/Xcode_14.2.app
+        xcrun --show-sdk-version
+
     - name: Remove pre-installed Colima and Lima
       run: brew uninstall colima lima
 
